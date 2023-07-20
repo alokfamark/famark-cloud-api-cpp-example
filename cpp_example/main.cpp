@@ -51,19 +51,25 @@ int main()
     cin >> userResponse;
     while (userResponse == 'Y' || userResponse == 'y')
     {
-        string displayName, systemName;
-        cout << "Enter Display Name: \n";
+        string firstName, lastName, phone, email;
+        cout << "Enter FirstName: \n";
         // Clearing new lines from input stream
         while (getchar() != '\n');
-        getline(cin, displayName);
-        cout << "Enter System Name: \n";
-        getline(cin, systemName);
+        getline(cin, firstName);
+        cout << "Enter LastName: \n";
+        getline(cin, lastName);
+        cout << "Enter Phone: \n";
+        getline(cin, phone);
+        cout << "Enter Email: \n";
+        getline(cin, email);
 
-        profileData["DisplayName"] = displayName;
-        profileData["SystemName"] = systemName;
+        profileData["FirstName"] = firstName;
+        profileData["LastName"] = lastName;
+        profileData["Phone"] = phone;
+        profileData["Email"] = email;
 
         //Calling CreateRecord action on System_Profile entity of System solution
-        string recordData = cloudAPI.post_data("/System_Profile/CreateRecord", profileData.toStyledString(), sessionId);
+        string recordData = cloudAPI.post_data("/Business_Contact/CreateRecord", profileData.toStyledString(), sessionId);
 
         if (!reader.parse(recordData, responseJson)) {
             cout << reader.getFormattedErrorMessages();
@@ -87,7 +93,7 @@ int main()
     Json::Value retrieveRequest;
     retrieveRequest["Columns"] = "DisplayName, SystemName";
     retrieveRequest["OrderBy"] = "DisplayName";
-    const string records = cloudAPI.post_data("/System_Profile/RetrieveMultipleRecords", retrieveRequest.toStyledString(), sessionId);
+    const string records = cloudAPI.post_data("/Business_Contact/RetrieveMultipleRecords", retrieveRequest.toStyledString(), sessionId);
 
     Json::Value recordObjects;
 
@@ -107,6 +113,72 @@ int main()
         recordObject = recordObjects[i];
         cout << "\n Record no.: " << i + 1 << " " << recordObject.toStyledString();
     }
+
+    // Updating records by taking input from user
+    char userUpdateResponse;
+    cout << "\nDo you want to update a new record (y/n): \n";
+    cin >> userUpdateResponse;
+    while (userUpdateResponse == 'Y' || userUpdateResponse == 'y')
+    {
+        string firstName, lastName, phone, email, contactId;
+        cout << "Enter ContactId";
+        getline(cin, contactId);
+        cout << "Enter FirstName: \n";
+        // Clearing new lines from input stream
+        while (getchar() != '\n');
+        getline(cin, firstName);
+        cout << "Enter LastName: \n";
+        getline(cin, lastName);
+        cout << "Enter Phone: \n";
+        getline(cin, phone);
+        cout << "Enter Email: \n";
+        getline(cin, email);
+
+        profileData["ContactId"] = contactId;
+        profileData["FirstName"] = firstName;
+        profileData["LastName"] = lastName;
+        profileData["Phone"] = phone;
+        profileData["Email"] = email;
+
+        //Calling UpdatingRecord action on System_Profile entity of System solution
+        string recordData = cloudAPI.post_data("/Business_Contact/UpdateRecord", profileData.toStyledString(), sessionId);
+
+        if (!reader.parse(recordData, responseJson)) {
+            cout << reader.getFormattedErrorMessages();
+            return -2;
+        }
+
+        const string recordId = responseJson.asString();
+
+        if (!recordId.empty()) {
+            cout << "Updating Record Id: \n" << recordId;
+            //Login to your famark cloud domain to see the newly created record under System => Profile
+            cout << "\nDo you want to update more System record (y/n)? \n";
+        }
+        else {
+            cout << "\nDo you want to try again (y/n)? \n";
+        }
+        cin >> userUpdateResponse;
+    }
+
+    // Delete records by taking input from user
+    char userDeletingResponse;
+    cout << "\nDo you want to update a new record (y/n): \n";
+    cin >> userDeletingResponse;
+    while (userDeletingResponse == 'Y' || userDeletingResponse == 'y')
+    {
+        string contactId;
+        cout << "Enter ContactId";
+        getline(cin, contactId);
+
+        profileData["ContactId"] = contactId;
+
+         //Calling DeleteRecord action on System_Profile entity of System solution
+        string recordData = cloudAPI.post_data("/Business_Contact/DeleteRecord", profileData.toStyledString(), sessionId);
+
+        cout << "Record Deleted";
+    }
+    
 
     return 0;
 }
