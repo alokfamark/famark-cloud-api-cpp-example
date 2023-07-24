@@ -163,7 +163,7 @@ int main()
 
     // Delete records by taking input from user
     char userDeletingResponse;
-    cout << "\nDo you want to update a new record (y/n): \n";
+    cout << "\nDo you want to delete a new record (y/n): \n";
     cin >> userDeletingResponse;
     while (userDeletingResponse == 'Y' || userDeletingResponse == 'y')
     {
