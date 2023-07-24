@@ -91,8 +91,8 @@ int main()
 
     //Calling RetrieveMultipleRecords action on the System_Profile entity
     Json::Value retrieveRequest;
-    retrieveRequest["Columns"] = "DisplayName, SystemName";
-    retrieveRequest["OrderBy"] = "DisplayName";
+    retrieveRequest["Columns"] = "FullName, Phone, Email, Business_ContactId";
+    retrieveRequest["OrderBy"] = "FullName";
     const string records = cloudAPI.post_data("/Business_Contact/RetrieveMultipleRecords", retrieveRequest.toStyledString(), sessionId);
 
     Json::Value recordObjects;
@@ -121,11 +121,11 @@ int main()
     while (userUpdateResponse == 'Y' || userUpdateResponse == 'y')
     {
         string firstName, lastName, phone, email, contactId;
-        cout << "Enter ContactId";
+        cout << "Enter ContactId: ";
         getline(cin, contactId);
-        cout << "Enter FirstName: \n";
         // Clearing new lines from input stream
         while (getchar() != '\n');
+        cout << "Enter FirstName: \n";
         getline(cin, firstName);
         cout << "Enter LastName: \n";
         getline(cin, lastName);
@@ -134,7 +134,7 @@ int main()
         cout << "Enter Email: \n";
         getline(cin, email);
 
-        profileData["ContactId"] = contactId;
+        profileData["Business_ContactId"] = contactId;
         profileData["FirstName"] = firstName;
         profileData["LastName"] = lastName;
         profileData["Phone"] = phone;
@@ -168,15 +168,18 @@ int main()
     while (userDeletingResponse == 'Y' || userDeletingResponse == 'y')
     {
         string contactId;
-        cout << "Enter ContactId";
+        cout << "Enter ContactId: ";
         getline(cin, contactId);
+        while (getchar() != '\n');
 
-        profileData["ContactId"] = contactId;
+        profileData["Business_ContactId"] = contactId;
 
          //Calling DeleteRecord action on System_Profile entity of System solution
         string recordData = cloudAPI.post_data("/Business_Contact/DeleteRecord", profileData.toStyledString(), sessionId);
 
         cout << "Record Deleted";
+        cout << "\nDo you want to delete a new record (y/n): \n";
+        cin >> userDeletingResponse;
     }
     
 
